@@ -7,7 +7,7 @@ if ( ! isset($CFG) ) die_with_error_log("Please configure this product using con
 // upgrade checking - don't change this unless you want to trigger
 // database upgrade messages it should be the max of all versions in
 // all database.php files.
-$CFG->dbversion = 201710072300;
+$CFG->dbversion = 201712022342;
 
 // Just turn this off to avoid security holes due to XML parsing
 if ( function_exists ( 'libxml_disable_entity_loader' ) ) libxml_disable_entity_loader();
@@ -87,6 +87,9 @@ if ( !isset($CFG->eventtime) ) $CFG->eventtime = 7*24*60*60;
 // By default we don't push events
 if ( ! isset($CFG->eventpushcount) ) $CFG->eventpushcount = 0;
 if ( ! isset($CFG->eventpushtime) ) $CFG->eventpushtime = 2;
+
+// New fontawesome configuration
+if ( ! isset($CFG->fontawesome) ) $CFG->fontawesome = $CFG->staticroot . '/font-awesome-4.7.0';
 
 // Certification hacks
 if ( !isset($CFG->require_conformance_parameters) ) $CFG->require_conformance_parameters = false;
