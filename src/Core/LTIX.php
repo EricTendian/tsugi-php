@@ -38,6 +38,10 @@ class LTIX {
     // The maximum length of the VARCHAR field
     const MAX_ACTIVITY = 1023;
 
+    const ROLE_LEARNER = 0;
+    const ROLE_INSTRUCTOR = 1000;
+    const ROLE_ADMINISTRATOR = 5000;
+
     /**
      * Get a singleton global connection or set it up if not already set up.
      */
@@ -57,7 +61,7 @@ class LTIX {
                 $PDOX->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             } catch(\PDOException $ex){
                 error_log("DB connection: "+$ex->getMessage());
-                die($ex->getMessage()); // with error_log
+                die('Failure connecting to the database, see error log'); // with error_log
             }
         }
         return $PDOX;
@@ -779,7 +783,7 @@ class LTIX {
         }
 
         // Get the role
-        $retval['role'] = 0;
+        $retval['role'] = self::ROLE_LEARNER;
         $roles = '';
         if ( isset($FIXED['custom_membership_role']) ) { // From LTI 2.x
             $roles = $FIXED['custom_membership_role'];
@@ -789,8 +793,8 @@ class LTIX {
 
         if ( strlen($roles) > 0 ) {
             $roles = strtolower($roles);
-            if ( ! ( strpos($roles,'instructor') === false ) ) $retval['role'] = 1000;
-            if ( ! ( strpos($roles,'administrator') === false ) ) $retval['role'] = 5000;
+            if ( ! ( strpos($roles,'instructor') === false ) ) $retval['role'] = self::ROLE_INSTRUCTOR;
+            if ( ! ( strpos($roles,'administrator') === false ) ) $retval['role'] = self::ROLE_ADMINISTRATOR;
             // Local superuser would be 10000
         }
 
@@ -1848,9 +1852,9 @@ class LTIX {
         // print_r($pieces); die();
 
         // Convert to an integer and check valid
-        $user_id = $pieces[0] + 0;
+        $user_id = is_numeric($pieces[0])? $pieces[0] + 0 : 0;
         $userEmail = $pieces[1];
-        $context_id = $pieces[2] + 0;
+        $context_id = is_numeric($pieces[2]) ? $pieces[2] + 0 : 0;
         if ( $user_id < 1 || $context_id < 1 ) {
             $user_id = false;
             $pieces = false;
