@@ -600,32 +600,32 @@ $('a').each(function (x) {
         $R = $CFG->wwwroot . '/';
         $set = new \Tsugi\UI\MenuSet();
         $set->setHome($CFG->servicename, $CFG->apphome);
-
-        if ( $CFG->DEVELOPER ) {
-            $set->addLeft('Developer', $R.'dev');
+        $set->addLeft('Tools', $R.'store');
+        if ( $this->session_get('id') ) {
+                $set->addLeft('Settings', $R . 'settings');
         }
-        if ( $this->session_get('id') || $CFG->DEVELOPER ) {
-            $set->addLeft('Admin', $R.'admin/index.php');
+
+        if ( $this->session_get('id') ) {
+            $submenu = new \Tsugi\UI\Menu();
+            $submenu->addLink('Profile', $R.'profile');
+            if ( U::get($_COOKIE, 'adminmenu') ) {
+                $submenu->addLink('Admin', $R.'admin');
+            }
+            if ( $CFG->DEVELOPER ) {
+                $submenu->addLink('Developer', $R.'dev');
+            }
+            $submenu->addLink('Logout', $R.'logout');
+            $set->addRight(htmlentities($this->session_get('displayname', '')), $submenu);
+        } else {
+            $set->addRight('Login', $R.'login');
         }
 
         $submenu = new \Tsugi\UI\Menu();
         $submenu->addLink('IMS LTI 1.1 Spec', 'http://www.imsglobal.org/LTI/v1p1p1/ltiIMGv1p1p1.html')
             ->addLink('IMS LTI 2.0 Spec', 'http://www.imsglobal.org/lti/ltiv2p0/ltiIMGv2p0.html')
             ->addLink('Tsugi Project Site', 'https://www.tsugi.org/');
+        $set->addRight('Links', $submenu);
 
-        $set->addLeft('Links', $submenu);
-
-        if ( $this->session_get('id') ) {
-            $submenu = new \Tsugi\UI\Menu();
-            $submenu->addLink('Profile', $R.'profile')
-                ->addLink('Use this Service', $R . 'admin/key/index.php')
-                ->addLink('Logout', $R.'logout');
-            $set->addRight(htmlentities($this->session_get('displayname', '')), $submenu);
-        } else {
-            $set->addRight('Login', $R.'login');
-        }
-
-        $set->addRight('<img style="width:4em;" src="'. $CFG->staticroot . '/img/logos/tsugi-logo.png' .'">', $R.'about');
         return $set;
     }
 
